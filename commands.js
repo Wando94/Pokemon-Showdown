@@ -147,13 +147,13 @@ var commands = exports.commands = {
 	},
 	replyhelp: ["/reply OR /r [message] - Send a private message to the last person you received a message from, or sent a message to."],
 
-	pm: 'msg',
+		pm: 'msg',
 	whisper: 'msg',
 	w: 'msg',
 	msg: function (target, room, user, connection) {
 		if (!target) return this.parse('/help msg');
 		target = this.splitTarget(target);
-		var targetUser = this.targetUser;
+		let targetUser = this.targetUser;
 		if (!target) {
 			this.errorReply("You forgot the comma.");
 			return this.parse('/help msg');
@@ -161,19 +161,19 @@ var commands = exports.commands = {
 		this.pmTarget = (targetUser || this.targetUsername);
 		if (!targetUser || !targetUser.connected) {
 			if (targetUser && !targetUser.connected) {
-				this.errorReply("User " + this.targetUsername + " is offline.");
+				this.errorReply("User " + this.targetUsername + " is offline. Try using /tell to send them an offline message.");
 				return;
 			} else {
-				this.errorReply("User "  + this.targetUsername + " not found. Did you misspell their name?");
-				return this.parse('/help msg');
+				this.errorReply("User "  + this.targetUsername + " not found. Did you misspell their name? If they are offline, try using /tell to send them an offline message.");
+				return this.parse('/help tell');
 			}
 			return;
 		}
 
 		if (Config.pmmodchat) {
-			var userGroup = user.group;
+			let userGroup = user.group;
 			if (Config.groupsranking.indexOf(userGroup) < Config.groupsranking.indexOf(Config.pmmodchat)) {
-				var groupName = Config.groups[Config.pmmodchat].name || Config.pmmodchat;
+				let groupName = Config.groups[Config.pmmodchat].name || Config.pmmodchat;
 				this.errorReply("Because moderated chat is set, you must be of rank " + groupName + " or higher to PM users.");
 				return false;
 			}
@@ -201,17 +201,17 @@ var commands = exports.commands = {
 
 		if (target.charAt(0) === '/' && target.charAt(1) !== '/') {
 			// PM command
-			var innerCmdIndex = target.indexOf(' ');
-			var innerCmd = (innerCmdIndex >= 0 ? target.slice(1, innerCmdIndex) : target.slice(1));
-			var innerTarget = (innerCmdIndex >= 0 ? target.slice(innerCmdIndex + 1) : '');
+			let innerCmdIndex = target.indexOf(' ');
+			let innerCmd = (innerCmdIndex >= 0 ? target.slice(1, innerCmdIndex) : target.slice(1));
+			let innerTarget = (innerCmdIndex >= 0 ? target.slice(innerCmdIndex + 1) : '');
 			switch (innerCmd) {
 			case 'me':
 			case 'mee':
 			case 'announce':
 				break;
 			case 'invite':
-			case 'inv':
-				var targetRoom = Rooms.search(innerTarget);
+			case 'inv': {
+				let targetRoom = Rooms.search(innerTarget);
 				if (!targetRoom || targetRoom === Rooms.global) return this.errorReply('The room "' + innerTarget + '" does not exist.');
 				if (targetRoom.staffRoom && !targetUser.isStaff) return this.errorReply('User "' + this.targetUsername + '" requires global auth to join room "' + targetRoom.id + '".');
 				if (targetRoom.modjoin) {
@@ -233,14 +233,25 @@ var commands = exports.commands = {
 
 				target = '/invite ' + targetRoom.id;
 				break;
+			}
 			default:
 				return this.errorReply("The command '/" + innerCmd + "' was unrecognized or unavailable in private messages. To send a message starting with '/" + innerCmd + "', type '//" + innerCmd + "'.");
 			}
 		}
 
-		var message = '|pm|' + user.getIdentity() + '|' + targetUser.getIdentity() + '|' + target;
+		let emoteMsg = parseEmoticons(target, room, user, true);
+		if ((!user.blockEmoticons && !targetUser.blockEmoticons) && emoteMsg) target = '/html ' + emoteMsg;
+
+		let message = '|pm|' + user.getIdentity() + '|' + targetUser.getIdentity() + '|' + target;
+
 		user.send(message);
-		if (targetUser !== user) targetUser.send(message);
+		if (targetUser !== user) {
+			if (Users.ShadowBan.checkBanned(user)) {
+				Users.ShadowBan.addMessage(user, "Private to " + targetUser.getIdentity(), target);
+			} else {
+				targetUser.send(message);
+			}
+		}
 		targetUser.lastPM = user.userid;
 		user.lastPM = targetUser.userid;
 	},
