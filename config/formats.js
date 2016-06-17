@@ -96,6 +96,18 @@ exports.Formats = [
 		banlist: ['NU', 'BL4', 'Chatter'],
 	},
 	{
+		name: "ZU",
+		section: "ORAS Singles",
+
+		ruleset: ['PU'],
+		banlist: ['Altaria', 'Arbok', 'Armaldo', 'Armaldo', 'Articuno', 'Avalugg', 'Basculin', 'Basculin-Blue-Striped', 'Beheeyem', 'Bouffalant', 'Chatot', 'Clefairy', 'Crustle',
+			'Dodrio', 'Drifblim', 'Dusknoir', 'Electrode', 'Exeggutor', 'Flareon', 'Floatzel', 'Fraxure', 'Gabite', 'Golem', 'Gorebyss', 'Gourgeist-Super', 'Grumpig', 'Heat Rock',
+			'Jumpluff', 'Kadabra', 'Kingler', 'Lapras', 'Leafeon', 'Leavanny', 'Lickilicky', 'Lumineon', 'Machoke', 'Marowak', 'Metang', 'Misdreavus', 'Monferno', 'Mr. Mime',
+			'Ninetales', 'Ninjask', 'Pawniard', 'Pelipper', 'Politoed', 'Probopass', 'Purugly', 'Raichu', 'Rampardos', 'Rapidash', 'Regice', 'Relicanth', 'Roselia', 'Rotom-Frost',
+			'Simisear', 'Sticky Web', 'Stoutland', 'Stunfisk', 'Swanna', 'Tangela', 'Torkoal', 'Ursaring', 'Vigoroth', 'Vullaby', 'Zebstrika',
+		],
+	},
+	{
 		name: "LC",
 		desc: [
 			"&bullet; <a href=\"https://www.smogon.com/forums/threads/3505710/\">LC Metagame Discussion</a>",
